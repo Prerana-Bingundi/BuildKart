@@ -1,0 +1,345 @@
+:root {
+  --color-bg: #F3F5FA;
+  --color-surface: #FFFFFF;
+  --color-navy: #101B33;
+  --color-navy-soft: #5B6478;
+  --color-amber: #C97A1E;
+  --color-amber-dark: #8A5313;
+  --color-amber-tint: #FCEFDD;
+  --color-icon-tint: #E7ECF9;
+  --color-border: #E4E7F0;
+  --color-success: #2E7D46;
+
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --shadow-card: 0 6px 20px rgba(16, 27, 51, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #1b1f2a;
+  font-family: var(--font-body);
+  color: var(--color-navy);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Phone-frame shell so the app previews like a mobile screen on any browser,
+   while still being fully responsive if you drop the frame for production. */
+.device-frame {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--color-bg);
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 431px) {
+  body {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+  }
+  .device-frame {
+    min-height: 90vh;
+    border-radius: 36px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+    border: 8px solid #0b0d12;
+  }
+}
+
+.screen {
+  flex: 1;
+  padding: 20px 20px 96px;
+  padding-top: calc(20px + env(safe-area-inset-top, 0px));
+}
+
+.screen-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--color-navy);
+  margin: 4px 0 16px;
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--color-amber);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.btn-primary:hover { background: var(--color-amber-dark); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--color-border);
+  color: var(--color-navy);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+}
+
+/* ---------- Bottom Navigation ---------- */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 8px calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-navy-soft);
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 12px;
+}
+
+.nav-item.active {
+  color: var(--color-amber);
+}
+
+.nav-item .nav-icon-wrap {
+  width: 40px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.nav-item.active .nav-icon-wrap {
+  background: var(--color-amber-tint);
+}
+
+/* ---------- Scrollbars for horizontal rows ---------- */
+.hscroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.hscroll::-webkit-scrollbar { display: none; }
+
+/* ---------- Splash screen ---------- */
+.splash {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(243,245,250,0.94) 0%, rgba(243,245,250,0.98) 100%),
+    var(--color-bg);
+  padding: 32px;
+}
+
+.splash-logo-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  color: var(--color-amber);
+}
+
+.splash-title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-navy);
+}
+.splash-title span { color: var(--color-amber); }
+
+.splash-tagline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 10px;
+  color: var(--color-navy);
+}
+
+.splash-sub {
+  font-size: 13px;
+  color: var(--color-navy-soft);
+  max-width: 260px;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.splash-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 28px;
+}
+.splash-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-amber);
+  opacity: 0.35;
+}
+.splash-dots span:nth-child(1) { opacity: 1; }
+.splash-dots span:nth-child(2) { opacity: 0.65; }
+
+/* ---------- Toast (pop-up message, e.g. "added to cart") ---------- */
+.toast-wrap {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 430px);
+  padding: 0 16px;
+  z-index: 100;
+  pointer-events: none; /* clicks pass through, except on the toast itself */
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-navy);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 28px rgba(16, 27, 51, 0.35);
+  font-size: 13.5px;
+  font-weight: 600;
+  animation: toast-in 0.25s ease-out;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  background: var(--color-success);
+  color: #fff;
+}
+.toast-error .toast-icon { background: #D1442F; }
+
+.toast-msg {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toast-action {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #F5B766;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 0 2px;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Bottom sheet (order details) ---------- */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 27, 51, 0.5);
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  animation: fade-in 0.2s ease-out;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 430px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-radius: 24px 24px 0 0;
+  padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  animation: sheet-up 0.25s ease-out;
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--color-border);
+  margin: 0 auto 14px;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
