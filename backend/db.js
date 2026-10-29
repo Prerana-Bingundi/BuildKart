@@ -8,7 +8,10 @@ async function connectDB() {
 
   mongoose.set('strictQuery', true);
 
-  await mongoose.connect(uri);
+  await mongoose.connect(uri, {
+    dbName: 'buildkart',
+  });
+
   console.log(`MongoDB connected -> ${mongoose.connection.name}`);
 }
 

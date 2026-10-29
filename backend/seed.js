@@ -1,16 +1,3 @@
-// Populates the database with sample data matching the BuildKart DBD:
-// categories, one user per role (customer/vendor/delivery/admin), a vendor
-// profile, a delivery partner profile, a handful of products per category,
-// inventory rows, a saved address, and one sample order + payment.
-//
-// Run with: npm run seed
-//
-// Seeded login credentials (mobile number / password), userType in brackets:
-//   9000000001 / customer123  [customer]
-//   9000000002 / vendor123    [vendor]
-//   9000000003 / delivery123  [delivery]
-//   9000000004 / admin123     [admin]
-
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const connectDB = require('./db');
@@ -25,54 +12,182 @@ const Address = require('./models/Address');
 const Order = require('./models/Order');
 const Payment = require('./models/Payment');
 
-const categoryNames = [
-  'Cement', 'TMT Steel', 'Sand', 'Aggregate', 'Bricks',
-  'Blocks', 'Plumbing', 'Electrical', 'Paints', 'Hardware',
-];
+const categoryNames = ['RMC', 'TMT Steel', 'Cement', 'Sand'];
 
-// A handful of real products per category, taken from the DBD's catalogue.
 const productsByCategory = {
   Cement: [
-    { productName: 'UltraTech OPC 53', brand: 'UltraTech', price: 420, unit: 'per bag (50kg)' },
-    { productName: 'Ambuja Cement', brand: 'Ambuja', price: 415, unit: 'per bag (50kg)' },
-    { productName: 'ACC Gold', brand: 'ACC', price: 405, unit: 'per bag (50kg)' },
+    {
+      productName: 'UltraTech OPC 43 Grade',
+      brand: 'UltraTech',
+      price: 420,
+      unit: 'per bag',
+      packSize: '50 kg (bag)',
+      image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&auto=format&fit=crop&q=60',
+      specifications: [
+        'Ordinary Portland Cement',
+        '43 grade compressive strength',
+        'Low heat of hydration',
+        'Conforms to IS 269:2015',
+      ],
+      typicalUses: [
+        'General concrete works',
+        'Masonry mortar',
+        'RCC works (where specified by engineer)',
+        'Plastering',
+      ],
+    },
+    {
+      productName: 'UltraTech OPC 53 Grade',
+      brand: 'UltraTech',
+      price: 435,
+      unit: 'per bag',
+      packSize: '50 kg (bag)',
+      image: 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?w=400&auto=format&fit=crop&q=60',
+      specifications: [
+        'Ordinary Portland Cement',
+        '53 grade high compressive strength',
+        'High early strength & rapid setting',
+        'Ideal for heavy structural elements',
+      ],
+      typicalUses: [
+        'Structural concrete (Slabs, Columns, Beams)',
+        'High-strength concrete applications',
+        'Precast concrete components',
+        'Commercial multi-story RCC',
+      ],
+    },
+    {
+      productName: 'UltraTech PPC (Portland Pozzolana)',
+      brand: 'UltraTech',
+      price: 412,
+      unit: 'per bag',
+      packSize: '50 kg (bag)',
+      image: 'https://images.unsplash.com/photo-1584463699042-45a805c82db6?w=400&auto=format&fit=crop&q=60',
+      specifications: [
+        'Portland Pozzolana Cement',
+        'Better long-term compressive strength',
+        'Low heat of hydration, resists shrinkage cracks',
+        'Highly durable against chemical & moisture attacks',
+      ],
+      typicalUses: [
+        'General construction',
+        'Masonry & brickwork',
+        'External and internal plastering',
+        'RCC (where permitted by structural design)',
+      ],
+    },
+    {
+      productName: 'UltraTech Weather Plus',
+      brand: 'UltraTech',
+      price: 460,
+      unit: 'per bag',
+      packSize: '50 kg (bag)',
+      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=60',
+      specifications: [
+        'Water-repellent active silicon particles',
+        'Enhanced workability and cohesive mix',
+        'Resists dampness and efflorescence',
+      ],
+      typicalUses: [
+        'Water-resistant concrete casting',
+        'Basement, roof slab, and exterior wall construction',
+        'Harsh weather exposure areas',
+      ],
+    },
+    {
+      productName: 'UltraTech Building Solutions Putty & Allied',
+      brand: 'UltraTech',
+      price: 850,
+      unit: 'per bag (40kg)',
+      packSize: '40 kg (bag)',
+      image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=400&auto=format&fit=crop&q=60',
+      specifications: [
+        'Polymer-modified wall care putty & tile adhesives',
+        'High adhesion bond strength',
+        'Smooth aesthetic white finish',
+      ],
+      typicalUses: [
+        'Finishing and wall care preparation',
+        'Crack filling and concrete repair',
+        'Tile fixing and waterproofing coats',
+      ],
+    },
   ],
   'TMT Steel': [
-    { productName: 'Tata Tiscon 12mm', brand: 'Tata', price: 68, unit: 'per kg' },
-    { productName: 'JSW Neosteel', brand: 'JSW', price: 66, unit: 'per kg' },
-    { productName: 'SAIL TMT', brand: 'SAIL', price: 64, unit: 'per kg' },
+    {
+      productName: 'Tata Tiscon 550D 12mm',
+      brand: 'Tata Tiscon',
+      price: 68,
+      unit: 'per kg',
+      packSize: '12mm rod (12m)',
+      image: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=400&auto=format&fit=crop&q=60',
+      specifications: ['Fe 550D Grade', 'Super ductile earthquake resistant', 'Superior rib design'],
+      typicalUses: ['RCC Columns and Beams', 'Heavy slab reinforcement'],
+    },
+    {
+      productName: 'JSW Neosteel 550D 10mm',
+      brand: 'JSW',
+      price: 66,
+      unit: 'per kg',
+      packSize: '10mm rod (12m)',
+      image: 'https://images.unsplash.com/photo-1535813547-99c456a41d4a?w=400&auto=format&fit=crop&q=60',
+      specifications: ['Fe 550D Grade', 'High tensile yield strength', 'Uniform thickness'],
+      typicalUses: ['Slab mesh reinforcement', 'Lintels and chajjas'],
+    },
+    {
+      productName: 'SAIL TMT 16mm',
+      brand: 'SAIL',
+      price: 64,
+      unit: 'per kg',
+      packSize: '16mm rod (12m)',
+      image: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=400&auto=format&fit=crop&q=60',
+      specifications: ['High yield strength', 'Excellent bendability', 'IS 1786 certified'],
+      typicalUses: ['Heavy foundations', 'Bridges and underground footings'],
+    },
+  ],
+  RMC: [
+    {
+      productName: 'M25 Ready-Mix Concrete',
+      brand: 'UltraTech RMC',
+      price: 4200,
+      unit: 'per Cu.M',
+      packSize: '1 Cubic Metre Transit Mixer',
+      image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&auto=format&fit=crop&q=60',
+      specifications: ['M25 Design Mix (1:1:2 equivalent)', 'Target slump 120 ± 25 mm', 'Flyash blended or OPC'],
+      typicalUses: ['Slab casting', 'Retaining walls', 'Foundation footings'],
+    },
+    {
+      productName: 'M30 High-Grade RMC',
+      brand: 'UltraTech RMC',
+      price: 4500,
+      unit: 'per Cu.M',
+      packSize: '1 Cubic Metre Transit Mixer',
+      image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&auto=format&fit=crop&q=60',
+      specifications: ['M30 Grade high durability', 'Controlled water-cement ratio', 'Superplasticizer dosed'],
+      typicalUses: ['Heavy load columns', 'Commercial structures', 'Basement raft slabs'],
+    },
   ],
   Sand: [
-    { productName: 'River Sand', brand: 'Local', price: 55, unit: 'per cubic ft' },
-    { productName: 'M Sand', brand: 'Local', price: 48, unit: 'per cubic ft' },
-  ],
-  Aggregate: [
-    { productName: '20mm Aggregate', brand: 'Local', price: 42, unit: 'per cubic ft' },
-    { productName: '10mm Aggregate', brand: 'Local', price: 44, unit: 'per cubic ft' },
-  ],
-  Bricks: [
-    { productName: 'Red Clay Bricks', brand: 'Local', price: 9, unit: 'per piece' },
-    { productName: 'Fly Ash Bricks', brand: 'Local', price: 7, unit: 'per piece' },
-  ],
-  Blocks: [
-    { productName: 'AAC 6 inch', brand: 'Local', price: 65, unit: 'per piece' },
-    { productName: 'Hollow Concrete Block', brand: 'Local', price: 40, unit: 'per piece' },
-  ],
-  Plumbing: [
-    { productName: 'PVC Pipe 1 inch', brand: 'Supreme', price: 180, unit: 'per 6m length' },
-    { productName: 'Ball Valve', brand: 'Ashirvad', price: 220, unit: 'per unit' },
-  ],
-  Electrical: [
-    { productName: 'Copper Wire 1.5sq mm', brand: 'Polycab', price: 1450, unit: 'per 90m coil' },
-    { productName: 'MCB 16A', brand: 'Havells', price: 145, unit: 'per unit' },
-  ],
-  Paints: [
-    { productName: 'Asian Apex', brand: 'Asian Paints', price: 320, unit: 'per litre' },
-    { productName: 'Berger Easy Clean', brand: 'Berger', price: 295, unit: 'per litre' },
-  ],
-  Hardware: [
-    { productName: 'GI Nails', brand: 'Local', price: 90, unit: 'per kg' },
-    { productName: 'Hammer', brand: 'Stanley', price: 350, unit: 'per unit' },
+    {
+      productName: 'River Sand (Triple Washed)',
+      brand: 'Local Solapur Pit',
+      price: 55,
+      unit: 'per cu.ft',
+      packSize: '1 Brass (100 cu.ft)',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&auto=format&fit=crop&q=60',
+      specifications: ['Silt content < 3%', 'Uniform grading Zone II', 'Moisture controlled'],
+      typicalUses: ['Concrete casting', 'Heavy masonry'],
+    },
+    {
+      productName: 'M-Sand (Manufactured Sand)',
+      brand: 'Ultratech Aggregates',
+      price: 44,
+      unit: 'per cu.ft',
+      packSize: '1 Brass (100 cu.ft)',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&auto=format&fit=crop&q=60',
+      specifications: ['VSI crushed cubical shape', 'Zero silt', 'Eco-friendly alternative to river sand'],
+      typicalUses: ['RCC structural concrete', 'Brickwork mortar'],
+    },
   ],
 };
 
@@ -80,19 +195,31 @@ async function seed() {
   await connectDB();
 
   await Promise.all([
-    User.deleteMany({}), Vendor.deleteMany({}), DeliveryPartner.deleteMany({}),
-    Category.deleteMany({}), Product.deleteMany({}), Inventory.deleteMany({}),
-    Address.deleteMany({}), Order.deleteMany({}), Payment.deleteMany({}),
+    User.deleteMany({}),
+    Vendor.deleteMany({}),
+    DeliveryPartner.deleteMany({}),
+    Category.deleteMany({}),
+    Product.deleteMany({}),
+    Inventory.deleteMany({}),
+    Address.deleteMany({}),
+    Order.deleteMany({}),
+    Payment.deleteMany({}),
   ]);
 
-  // --- Categories ---
+  // --- 1. Categories ---
   const categories = await Category.insertMany(categoryNames.map((name) => ({ categoryName: name })));
   const categoryIdByName = Object.fromEntries(categories.map((c) => [c.categoryName, c._id]));
 
-  // --- Users (one per role) ---
+  // --- 2. Users ---
   const [customerHash, vendorHash, deliveryHash, adminHash] = await Promise.all(
     ['customer123', 'vendor123', 'delivery123', 'admin123'].map((p) => bcrypt.hash(p, 10))
   );
+
+  const customerAddress = {
+    street: 'Flat 402, Building A, MIDC Road',
+    city: 'Solapur',
+    pincode: '413001',
+  };
 
   const customerUser = await User.create({
     fullName: 'Rakesh Sharma',
@@ -100,16 +227,23 @@ async function seed() {
     email: 'rakesh.sharma@buildkart.example',
     userType: 'customer',
     passwordHash: customerHash,
+    status: 'Active',
+    address: customerAddress,
     site: 'Construction Site A, Solapur',
   });
 
   const vendorUser = await User.create({
-    fullName: 'Suresh Patil',
-    mobileNumber: '9000000002',
-    email: 'suresh.patil@buildkart.example',
+    fullName: 'Krishna Steel & UltraTech Building Solutions',
+    mobileNumber: '9922687888',
+    email: 'krishnasteel@solapurcement.example',
     userType: 'vendor',
     passwordHash: vendorHash,
-    gstNumber: '27ABCDE1234F1Z5',
+    status: 'Active',
+    vendorDetails: {
+      storeName: 'UltraTech Building Solutions at Krishna Steel',
+      gstNumber: '27ABCDE1234F1Z5',
+      storeAddress: '49, 15-A, Rupa Bhavani Road, Hanuman Nagar, Bhavani Peth, Solapur 413002',
+    },
   });
 
   const deliveryUser = await User.create({
@@ -118,6 +252,11 @@ async function seed() {
     email: 'amit.kale@buildkart.example',
     userType: 'delivery',
     passwordHash: deliveryHash,
+    status: 'Active',
+    deliveryDetails: {
+      vehicleType: 'truck',
+      vehicleNumber: 'MH13AB1234',
+    },
   });
 
   const adminUser = await User.create({
@@ -126,33 +265,38 @@ async function seed() {
     email: 'admin@buildkart.example',
     userType: 'admin',
     passwordHash: adminHash,
+    status: 'Active',
+    adminDetails: {
+      department: 'Operations',
+      employeeId: 'ADM-001',
+    },
   });
 
-  // --- Vendor + Delivery Partner profiles ---
+  // --- 3. Vendor + DeliveryPartner collections ---
   const vendor = await Vendor.create({
     userId: vendorUser._id,
-    vendorName: 'Patil Building Materials',
-    ownerName: 'Suresh Patil',
-    mobileNumber: '9000000002',
+    vendorName: 'UltraTech Building Solutions at Krishna Steel',
+    ownerName: 'Krishna Steel Traders',
+    mobileNumber: '9922687888',
     gstNumber: '27ABCDE1234F1Z5',
-    address: 'Plot 14, MIDC Industrial Area',
+    address: '49, 15-A, Rupa Bhavani Road, Hanuman Nagar, Bhavani Peth',
     city: 'Solapur',
     kycStatus: 'Verified',
-    rating: 4.3,
+    rating: 4.8,
   });
 
   const deliveryPartner = await DeliveryPartner.create({
     userId: deliveryUser._id,
-    partnerName: 'Amit Kale',
+    partnerName: 'Amit Kale Logistics',
     mobileNumber: '9000000003',
-    vehicleType: 'Van',
+    vehicleType: 'Truck',
     vehicleNumber: 'MH13AB1234',
-    currentLocation: 'Solapur',
+    currentLocation: 'Solapur Hub',
     availability: 'Available',
-    rating: 4.6,
+    rating: 4.7,
   });
 
-  // --- Products + Inventory, all under this one seeded vendor ---
+  // --- 4. Products ---
   const allProducts = [];
   for (const [catName, items] of Object.entries(productsByCategory)) {
     for (const item of items) {
@@ -165,74 +309,43 @@ async function seed() {
   }
   const insertedProducts = await Product.insertMany(allProducts);
 
+  // --- 5. Inventories ---
   await Inventory.insertMany(
     insertedProducts.map((p) => ({
       vendorId: vendor._id,
       productId: p._id,
-      availableQuantity: 100,
+      availableQuantity: p.productName.includes('RMC') ? 50 : 500,
       reservedQuantity: 0,
       unit: p.unit,
-      minimumStock: 10,
-      warehouseLocation: 'Solapur Warehouse 1',
+      minimumStock: 20,
+      warehouseLocation: 'Solapur Central Yard, Bhavani Peth',
       status: 'In Stock',
     }))
   );
 
-  // --- Address for the customer ---
-  const address = await Address.create({
+  // --- 6. Address ---
+  await Address.create({
     userId: customerUser._id,
-    addressLine: 'Construction Site A, Near MIDC Chowk',
-    area: 'MIDC',
-    city: 'Solapur',
-    pincode: '413001',
+    addressLine: customerAddress.street,
+    area: 'Bhavani Peth',
+    city: customerAddress.city,
+    pincode: customerAddress.pincode,
     addressType: 'Site',
+    isDefault: true,
   });
 
-  // --- One sample order + payment ---
-  const cement = insertedProducts.find((p) => p.productName === 'UltraTech OPC 53');
-  const steel = insertedProducts.find((p) => p.productName === 'Tata Tiscon 12mm');
-
-  const order = await Order.create({
-    userId: customerUser._id,
-    vendorId: vendor._id,
-    totalAmount: cement.price * 5 + steel.price * 20,
-    deliveryAddress: `${address.addressLine}, ${address.city} - ${address.pincode}`,
-    orderStatus: 'Delivered',
-    paymentStatus: 'Paid',
-    deliveryPartnerId: deliveryPartner._id,
-    items: [
-      {
-        productId: cement._id, name: cement.productName, quantity: 5,
-        unitPrice: cement.price, totalPrice: cement.price * 5, itemStatus: 'Delivered',
-      },
-      {
-        productId: steel._id, name: steel.productName, quantity: 20,
-        unitPrice: steel.price, totalPrice: steel.price * 20, itemStatus: 'Delivered',
-      },
-    ],
-  });
-
-  await Payment.create({
-    orderId: order._id,
-    userId: customerUser._id,
-    paymentMethod: 'UPI',
-    amount: order.totalAmount,
-    transactionId: 'TXN' + Date.now(),
-    paymentStatus: 'Success',
-    gateway: 'Razorpay',
-  });
-
-  console.log('Seed complete:');
-  console.log(`  ${categories.length} categories, ${insertedProducts.length} products, 1 order`);
-  console.log('  Login credentials (mobile / password / role):');
-  console.log('    9000000001 / customer123 / customer');
-  console.log('    9000000002 / vendor123   / vendor');
-  console.log('    9000000003 / delivery123 / delivery');
-  console.log('    9000000004 / admin123    / admin');
+  console.log('--- Database Seed Complete ---');
+  console.log(`  Categories (${categories.length}): ${categories.map((c) => c.categoryName).join(', ')}`);
+  console.log(`  Products Seeded: ${insertedProducts.length} items`);
+  console.log('  Credentials:');
+  console.log('    Customer: 9000000001 / customer123');
+  console.log('    Vendor:   9922687888 / vendor123 (Krishna Steel Solapur)');
+  console.log('    Delivery: 9000000003 / delivery123');
+  console.log('    Admin:    9000000004 / admin123');
   process.exit(0);
 }
 
 seed().catch((err) => {
-  console.error('Seed failed:', err);
+  console.error('Seed execution error:', err);
   process.exit(1);
 });
